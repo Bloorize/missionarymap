@@ -55,14 +55,9 @@ export function MissionCombobox({ value, onChange }: MissionComboboxProps) {
                             {ALL_MISSIONS.map((mission) => (
                                 <CommandItem
                                     key={mission.id}
-                                    value={mission.name} // Search by name, not ID
-                                    onSelect={(currentValue) => {
-                                        // We need to find the ID corresponding to the name selected
-                                        // cmdk returns the value as lowercase, so we match loosely or ensure value is passed right
-                                        const matched = ALL_MISSIONS.find(m => m.name.toLowerCase() === currentValue.toLowerCase())
-                                        if (matched) {
-                                            onChange(matched.id)
-                                        }
+                                    value={mission.id} // Use ID as value for exact mapping
+                                    onSelect={(selectedId) => {
+                                        onChange(selectedId)
                                         setOpen(false)
                                     }}
                                 >
