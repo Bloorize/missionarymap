@@ -210,11 +210,6 @@ export function WorldMap({ slug }: WorldMapProps) {
         </ZoomableGroup>
       </ComposableMap>
 
-      <div className="absolute bottom-10 left-10 bg-black/50 backdrop-blur-md p-4 rounded-lg text-white border border-white/10">
-        <h3 className="text-sm font-medium text-gray-400 uppercase tracking-widest">Total Guesses</h3>
-        <p className="text-4xl font-bold">{markers.length}</p>
-      </div>
-
       <div className="absolute bottom-10 right-10 flex flex-col gap-2">
         <button
           type="button"
