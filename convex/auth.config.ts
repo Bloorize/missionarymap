@@ -14,7 +14,7 @@ import { AuthConfig } from "convex/server";
  * If unset, falls back to the default (works if you use the template's Clerk instance).
  */
 const clerkDomain =
-    process.env.CLERK_JWT_ISSUER_DOMAIN || "https://devoted-collie-0.clerk.accounts.dev";
+    process.env.CLERK_JWT_ISSUER_DOMAIN || "https://wealthy-beetle-0.clerk.accounts.dev";
 
 export default {
     providers: [
