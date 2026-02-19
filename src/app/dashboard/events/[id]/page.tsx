@@ -19,8 +19,8 @@ export default function EventAdminPage() {
     // Real-time guesses count
     const guesses = useQuery(api.guesses.getGuesses, event ? { slug: event.slug } : "skip");
 
-    if (events === undefined) return <div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div>;
-    if (!event) return <div className="p-10 text-center">Event not found.</div>;
+    if (events === undefined) return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="animate-spin text-slate-400" /></div>;
+    if (!event) return <div className="min-h-screen bg-slate-50 flex items-center justify-center p-10 text-center text-slate-600">Event not found.</div>;
 
     // Safe window usage check (though Next.js client component usually safe, handle hydration)
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
@@ -28,8 +28,9 @@ export default function EventAdminPage() {
     const liveUrl = `/live/${event.slug}`;
 
     return (
-        <div className="container mx-auto py-10 px-4 max-w-4xl">
-            <Link href="/dashboard" className="text-sm text-slate-500 hover:text-slate-900 mb-6 inline-flex items-center">
+        <div className="min-h-screen bg-slate-50">
+            <div className="container mx-auto py-10 px-4 max-w-4xl">
+                <Link href="/dashboard" className="text-sm text-slate-500 hover:text-slate-700 mb-6 inline-flex items-center transition-colors">
                 <ChevronLeft className="w-4 h-4 mr-1" /> Back to Dashboard
             </Link>
 
@@ -40,7 +41,7 @@ export default function EventAdminPage() {
                 </div>
                 <div className="flex gap-3">
                     <Link href={liveUrl} target="_blank">
-                        <Button size="lg" className="bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-200">
+                        <Button size="lg" className="shadow-md">
                             <Monitor className="mr-2 h-5 w-5" /> Launch TV View
                         </Button>
                     </Link>
@@ -87,6 +88,7 @@ export default function EventAdminPage() {
                         </Button>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     );

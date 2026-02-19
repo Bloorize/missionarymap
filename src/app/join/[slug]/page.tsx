@@ -80,13 +80,13 @@ export default function JoinEventPage() {
 
     if (hasSubmitted) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0e1a] p-4 text-white">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
                 <div className="max-w-md w-full text-center space-y-6 animate-in zoom-in-50 duration-500">
-                    <div className="mx-auto w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
-                        <CheckCircle2 className="w-10 h-10 text-green-400" />
+                    <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 ring-4 ring-green-50">
+                        <CheckCircle2 className="w-10 h-10 text-green-600" />
                     </div>
-                    <h1 className="text-3xl font-bold">You're on the map!</h1>
-                    <p className="text-slate-400 text-lg">
+                    <h1 className="text-3xl font-bold text-slate-900">You're on the map!</h1>
+                    <p className="text-slate-600 text-lg">
                         Look at the screen to see your pin drop.
                     </p>
                     <div className="pt-8">
@@ -128,7 +128,7 @@ export default function JoinEventPage() {
                             </p>
                         </div>
 
-                        <Button type="submit" size="lg" className="w-full text-lg h-14 bg-blue-600 hover:bg-blue-500" disabled={isSubmitting || !missionID || !guestName}>
+                        <Button type="submit" size="lg" className="w-full text-lg h-14" disabled={isSubmitting || !missionID || !guestName}>
                             {isSubmitting ? <Loader2 className="animate-spin" /> : "Submit Guess"}
                         </Button>
                     </form>

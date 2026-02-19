@@ -34,12 +34,13 @@ export default function CreateEventPage() {
     };
 
     return (
-        <div className="container mx-auto py-10 px-4 max-w-lg">
-            <Link href="/dashboard" className="text-sm text-slate-500 hover:text-slate-900 mb-6 inline-flex items-center">
-                <ChevronLeft className="w-4 h-4 mr-1" /> Back to Dashboard
-            </Link>
+        <div className="min-h-screen bg-slate-50">
+            <div className="container mx-auto py-10 px-4 max-w-lg">
+                <Link href="/dashboard" className="text-sm text-slate-500 hover:text-slate-700 mb-6 inline-flex items-center transition-colors">
+                    <ChevronLeft className="w-4 h-4 mr-1" /> Back to Dashboard
+                </Link>
 
-            <Card>
+                <Card className="border-slate-200 shadow-sm">
                 <CardHeader>
                     <CardTitle>Create New Event</CardTitle>
                     <CardDescription>Set up a mission call guessing party.</CardDescription>
@@ -79,6 +80,7 @@ export default function CreateEventPage() {
                     </form>
                 </CardContent>
             </Card>
+            </div>
         </div>
     );
 }

@@ -20,18 +20,18 @@ export function QRCodeCard({ url, slug }: QRCodeCardProps) {
     }
 
     return (
-        <div className="flex flex-col items-center space-y-4 p-6 bg-white rounded-xl shadow-sm border">
-            <div className="bg-white p-4 rounded-lg border-4 border-slate-900">
+        <div className="flex flex-col items-center space-y-4 p-6 bg-white rounded-xl shadow-sm border border-slate-200">
+            <div className="bg-white p-4 rounded-lg border-2 border-slate-200">
                 <QRCodeSVG value={url} size={200} level="H" />
             </div>
 
             <div className="text-center space-y-2">
-                <p className="text-sm text-gray-500 font-medium uppercase tracking-wider">Join Code</p>
+                <p className="text-sm text-slate-500 font-medium uppercase tracking-wider">Join Code</p>
                 <p className="text-3xl font-bold tracking-widest font-mono text-slate-900">{slug}</p>
             </div>
 
             <div className="flex w-full items-center space-x-2">
-                <div className="flex-1 bg-slate-100 p-2 rounded text-xs font-mono truncate text-gray-600">
+                <div className="flex-1 bg-slate-50 p-2 rounded text-xs font-mono truncate text-slate-600">
                     {url}
                 </div>
                 <Button size="icon" variant="outline" onClick={handleCopy}>
