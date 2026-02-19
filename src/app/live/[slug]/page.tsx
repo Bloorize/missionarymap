@@ -64,8 +64,8 @@ export default function LiveMapPage() {
         </div>
       </div>
 
-      {/* Bottom left: Total Guesses, then Join at below */}
-      <div className="absolute bottom-10 left-10 z-10 flex flex-col gap-4 pointer-events-none">
+      {/* Bottom left: Total Guesses, then Join at below - hidden on mobile to avoid blocking the map */}
+      <div className="absolute bottom-10 left-10 z-10 hidden md:flex flex-col gap-4 pointer-events-none">
         <div className="bg-black/50 backdrop-blur-md p-4 rounded-lg text-white border border-white/10">
           <h3 className="text-sm font-medium text-gray-400 uppercase tracking-widest">Total Guesses</h3>
           <p className="text-4xl font-bold">{guessCount}</p>
