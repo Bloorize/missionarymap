@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, PartyPopper, Smartphone } from "lucide-react";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton, ClerkLoading } from "@clerk/nextjs";
 
 export default function Home() {
   return (
@@ -31,6 +31,11 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+          <ClerkLoading>
+            <Button size="lg" className="h-14 px-8 text-lg" disabled>
+              Loading…
+            </Button>
+          </ClerkLoading>
           <SignedOut>
             <SignInButton mode="modal">
               <Button size="lg" className="h-14 px-8 text-lg shadow-md hover:shadow-lg transition-all hover:scale-[1.02]">
@@ -38,7 +43,6 @@ export default function Home() {
               </Button>
             </SignInButton>
           </SignedOut>
-
           <SignedIn>
             <Link href="/dashboard">
               <Button size="lg" className="h-14 px-8 text-lg shadow-md hover:shadow-lg transition-all hover:scale-[1.02]">

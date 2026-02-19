@@ -1,5 +1,34 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Convex + Clerk Setup (Local & Production)
+
+### How it works
+
+- **Convex** has two deployments per project: **dev** and **prod** (separate databases).
+- **Local**: `npm run dev` → Next.js uses `NEXT_PUBLIC_CONVEX_URL` from `.env.local` → usually points to Convex **dev**.
+- **Production**: Deployed app uses `NEXT_PUBLIC_CONVEX_URL` from your host (e.g. Vercel) → usually points to Convex **prod**.
+
+Both deployments need the same Clerk auth config. The auth domain is set in Convex (not Next.js).
+
+### One-time setup
+
+1. **Convex**: Run `npx convex dev` to create/link your project. This writes `NEXT_PUBLIC_CONVEX_URL` to `.env.local`.
+2. **Clerk**: Create a JWT template named `convex` in [Clerk Dashboard → JWT Templates](https://dashboard.clerk.com/last-active?path=jwt-templates). Copy the **Issuer URL**.
+3. **Convex Dashboard**: For **both** dev and prod:
+   - Go to [dashboard.convex.dev](https://dashboard.convex.dev) → your project
+   - Switch deployment (dev/prod) in the left sidebar
+   - Settings → Environment Variables → add `CLERK_JWT_ISSUER_DOMAIN` = your Clerk Issuer URL
+4. Run `npx convex dev` again to sync the auth config.
+
+### Environment variables
+
+| Variable | Where | Used by |
+|----------|-------|---------|
+| `NEXT_PUBLIC_CONVEX_URL` | `.env.local` (local) / Vercel (prod) | Next.js – which Convex backend to call |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Same | Next.js – Clerk auth |
+| `CLERK_SECRET_KEY` | Same | Next.js – Clerk auth (server) |
+| `CLERK_JWT_ISSUER_DOMAIN` | Convex Dashboard (per deployment) | Convex – which Clerk JWT issuer to trust |
+
 ## Getting Started
 
 First, run the development server:
