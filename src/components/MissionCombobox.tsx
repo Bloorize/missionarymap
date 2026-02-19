@@ -37,29 +37,34 @@ export function MissionCombobox({ value, onChange }: MissionComboboxProps) {
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button
+                    type="button"
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between"
+                    className="w-full justify-between h-12 text-left font-normal"
                 >
-                    {selectedMission ? selectedMission.name : "Select mission..."}
+                    <span className="truncate">
+                        {selectedMission ? selectedMission.name : "Select mission..."}
+                    </span>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[300px] p-0" align="start">
                 <Command>
-                    <CommandInput placeholder="Search mission..." />
-                    <CommandList>
+                    <CommandInput placeholder="Search mission..." className="h-12" />
+                    <CommandList className="max-h-[300px]">
                         <CommandEmpty>No mission found.</CommandEmpty>
                         <CommandGroup>
                             {ALL_MISSIONS.map((mission) => (
                                 <CommandItem
                                     key={mission.id}
-                                    value={mission.id} // Use ID as value for exact mapping
-                                    onSelect={(selectedId) => {
-                                        onChange(selectedId)
-                                        setOpen(false)
+                                    value={`${mission.name} ${mission.id}`} // Search by both
+                                    onSelect={() => {
+                                        console.log("Selected mission:", mission.id);
+                                        onChange(mission.id);
+                                        setOpen(false);
                                     }}
+                                    className="py-3 cursor-pointer" // Larger tap target
                                 >
                                     <Check
                                         className={cn(
