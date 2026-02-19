@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { JoinWithCodeForm } from "@/components/JoinWithCodeForm";
 import { ArrowRight, Globe, PartyPopper, Smartphone } from "lucide-react";
 
 export default function Home() {
@@ -22,10 +23,15 @@ export default function Home() {
           Guests guess on their phones, pins drop on the big screen instantly.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+        <div className="flex flex-col items-center gap-6 pt-6">
+          <div className="w-full flex flex-col items-center gap-2">
+            <p className="text-sm font-medium text-slate-600">Joining an event? Enter the code from the screen</p>
+            <JoinWithCodeForm />
+          </div>
+          <p className="text-slate-400 text-sm">or</p>
           <Link href="/dashboard">
-            <Button size="lg" className="h-14 px-8 text-lg shadow-md hover:shadow-lg transition-all hover:scale-[1.02]">
-              Go to Dashboard <ArrowRight className="ml-2 w-5 h-5" />
+            <Button variant="outline" size="lg" className="h-12 px-6">
+              Host an Event <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
