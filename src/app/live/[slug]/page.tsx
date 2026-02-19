@@ -11,10 +11,15 @@ export default function LiveMapPage() {
   const slug = params.slug as string;
 
   const [event, setEvent] = useState<Awaited<ReturnType<typeof getEvent>> | null | undefined>(undefined);
+  const [joinOrigin, setJoinOrigin] = useState("");
 
   useEffect(() => {
     getEvent(slug).then(setEvent);
   }, [slug]);
+
+  useEffect(() => {
+    setJoinOrigin(typeof window !== "undefined" ? window.location.origin : "");
+  }, []);
 
   if (event === undefined) {
     return (
@@ -50,7 +55,9 @@ export default function LiveMapPage() {
 
         <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-xl text-center">
           <p className="text-xs text-slate-400 uppercase tracking-widest mb-1">Join at</p>
-          <p className="text-2xl font-mono font-bold text-white tracking-widest">missionmap.live</p>
+          <p className="text-2xl font-mono font-bold text-white tracking-widest">
+            {joinOrigin || "—"}
+          </p>
           <div className="mt-1 px-2 py-0.5 bg-blue-600 rounded text-xs font-bold text-white inline-block">
             Code: {event.slug}
           </div>
