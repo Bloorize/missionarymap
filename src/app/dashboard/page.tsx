@@ -6,7 +6,6 @@ import { api } from "../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Calendar, ArrowRight, Loader2 } from "lucide-react";
-import { TokenDebug } from "@/components/TokenDebug";
 
 export default function DashboardPage() {
     const events = useQuery(api.events.getMyEvents);
@@ -30,7 +29,6 @@ export default function DashboardPage() {
             </div>
 
             <div className="container mx-auto py-10 px-4 max-w-5xl">
-                <TokenDebug />
                 {!events ? (
                     <div className="flex justify-center py-20">
                         <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
