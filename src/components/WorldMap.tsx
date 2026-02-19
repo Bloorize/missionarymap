@@ -1,11 +1,17 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps";
 import { motion, AnimatePresence } from "framer-motion";
 import { getGuesses } from "@/lib/guesses";
+import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+
+const DEFAULT_CENTER: [number, number] = [0, 20];
+const DEFAULT_ZOOM = 1;
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 8;
 
 interface WorldMapProps {
   slug: string;
@@ -13,6 +19,7 @@ interface WorldMapProps {
 
 export function WorldMap({ slug }: WorldMapProps) {
   const [guesses, setGuesses] = useState<Awaited<ReturnType<typeof getGuesses>>>([]);
+  const [position, setPosition] = useState({ coordinates: DEFAULT_CENTER, zoom: DEFAULT_ZOOM });
 
   useEffect(() => {
     const load = () => getGuesses(slug).then(setGuesses);
@@ -20,6 +27,31 @@ export function WorldMap({ slug }: WorldMapProps) {
     const interval = setInterval(load, 2000);
     return () => clearInterval(interval);
   }, [slug]);
+
+  const handleMoveEnd = useCallback(
+    (pos: { coordinates: [number, number]; zoom: number }) => {
+      setPosition({ coordinates: pos.coordinates, zoom: pos.zoom });
+    },
+    []
+  );
+
+  const handleZoomIn = useCallback(() => {
+    setPosition((p) => ({
+      ...p,
+      zoom: Math.min(MAX_ZOOM, p.zoom * 1.5),
+    }));
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    setPosition((p) => ({
+      ...p,
+      zoom: Math.max(MIN_ZOOM, p.zoom / 1.5),
+    }));
+  }, []);
+
+  const handleReset = useCallback(() => {
+    setPosition({ coordinates: DEFAULT_CENTER, zoom: DEFAULT_ZOOM });
+  }, []);
 
   const markers = useMemo(() => {
     return guesses.map((g) => ({
@@ -39,7 +71,13 @@ export function WorldMap({ slug }: WorldMapProps) {
         projectionConfig={{ scale: 140 }}
         className="w-full h-full"
       >
-        <ZoomableGroup center={[0, 20]} zoom={1} maxZoom={4} minZoom={0.7}>
+        <ZoomableGroup
+          center={position.coordinates}
+          zoom={position.zoom}
+          minZoom={MIN_ZOOM}
+          maxZoom={MAX_ZOOM}
+          onMoveEnd={handleMoveEnd}
+        >
           <Geographies geography={GEO_URL}>
             {({ geographies }) =>
               geographies.map((geo) => (
@@ -115,6 +153,37 @@ export function WorldMap({ slug }: WorldMapProps) {
         <h3 className="text-sm font-medium text-gray-400 uppercase tracking-widest">Total Guesses</h3>
         <p className="text-4xl font-bold">{markers.length}</p>
       </div>
+
+      <div className="absolute bottom-10 right-10 flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={handleZoomIn}
+          className="p-3 bg-black/50 backdrop-blur-md rounded-lg text-white border border-white/10 hover:bg-white/10 transition-colors"
+          aria-label="Zoom in"
+        >
+          <ZoomIn className="w-5 h-5" />
+        </button>
+        <button
+          type="button"
+          onClick={handleZoomOut}
+          className="p-3 bg-black/50 backdrop-blur-md rounded-lg text-white border border-white/10 hover:bg-white/10 transition-colors"
+          aria-label="Zoom out"
+        >
+          <ZoomOut className="w-5 h-5" />
+        </button>
+        <button
+          type="button"
+          onClick={handleReset}
+          className="p-3 bg-black/50 backdrop-blur-md rounded-lg text-white border border-white/10 hover:bg-white/10 transition-colors"
+          aria-label="Reset view"
+        >
+          <Maximize2 className="w-5 h-5" />
+        </button>
+      </div>
+
+      <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/40">
+        Scroll to zoom • Drag to pan
+      </p>
     </div>
   );
 }

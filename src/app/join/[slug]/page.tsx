@@ -74,6 +74,11 @@ export default function JoinEventPage() {
   }
 
   if (hasSubmitted) {
+    const handleSubmitAnother = () => {
+      localStorage.removeItem(`submitted_${slug}`);
+      setHasSubmitted(false);
+    };
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
         <div className="max-w-md w-full text-center space-y-6 animate-in zoom-in-50 duration-500">
@@ -83,7 +88,14 @@ export default function JoinEventPage() {
           <h1 className="text-3xl font-bold text-slate-900">You&apos;re on the map!</h1>
           <p className="text-slate-600 text-lg">Look at the screen to see your pin drop.</p>
           <div className="pt-8">
-            <p className="text-sm text-slate-500">Waiting for the reveal...</p>
+            <p className="text-sm text-slate-500 mb-4">Waiting for the reveal...</p>
+            <button
+              type="button"
+              onClick={handleSubmitAnother}
+              className="text-sm text-blue-600 hover:text-blue-700 underline"
+            >
+              Submit a different guess
+            </button>
           </div>
         </div>
       </div>
