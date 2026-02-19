@@ -8,7 +8,8 @@ import { MissionCombobox } from "@/components/MissionCombobox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Loader2, CheckCircle2, MapPin } from "lucide-react";
+import Link from "next/link";
+import { Loader2, CheckCircle2, MapPin, ExternalLink } from "lucide-react";
 import { ALL_MISSIONS } from "@/data/missions";
 
 export default function JoinEventPage() {
@@ -20,6 +21,13 @@ export default function JoinEventPage() {
   const [missionID, setMissionID] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [liveMapUrl, setLiveMapUrl] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setLiveMapUrl(`${window.location.origin}/live/${slug}`);
+    }
+  }, [slug]);
 
   useEffect(() => {
     getEvent(slug).then(setEvent);
@@ -87,6 +95,18 @@ export default function JoinEventPage() {
           </div>
           <h1 className="text-3xl font-bold text-slate-900">You&apos;re on the map!</h1>
           <p className="text-slate-600 text-lg">Look at the screen to see your pin drop.</p>
+          {liveMapUrl && (
+            <Link
+              href={liveMapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              <MapPin className="w-5 h-5" />
+              View the live map
+              <ExternalLink className="w-4 h-4" />
+            </Link>
+          )}
           <div className="pt-8">
             <p className="text-sm text-slate-500 mb-4">Waiting for the reveal...</p>
             <button
