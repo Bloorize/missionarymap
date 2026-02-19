@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { getSupabase } from "./supabase";
 
 export async function submitGuess(
   slug: string,
@@ -8,7 +8,7 @@ export async function submitGuess(
   lat: number,
   lng: number
 ) {
-  const { data: event } = await supabase
+  const { data: event } = await getSupabase()
     .from("events")
     .select("id")
     .eq("slug", slug)
@@ -16,7 +16,7 @@ export async function submitGuess(
 
   if (!event) throw new Error("Event not found");
 
-  const { error } = await supabase.from("guesses").insert({
+  const { error } = await getSupabase().from("guesses").insert({
     event_id: event.id,
     guest_name: guestName,
     mission_id: missionId,
@@ -30,7 +30,7 @@ export async function submitGuess(
 }
 
 export async function getGuesses(slug: string) {
-  const { data: event } = await supabase
+  const { data: event } = await getSupabase()
     .from("events")
     .select("id")
     .eq("slug", slug)
@@ -38,7 +38,7 @@ export async function getGuesses(slug: string) {
 
   if (!event) return [];
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("guesses")
     .select("*")
     .eq("event_id", event.id)

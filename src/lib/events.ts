@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { getSupabase } from "./supabase";
 
 function generateSlug() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -11,7 +11,7 @@ function generateSlug() {
 
 export async function createEvent(title: string, youthName: string) {
   const slug = generateSlug();
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("events")
     .insert({ title, youth_name: youthName, slug })
     .select("id, slug")
@@ -22,7 +22,7 @@ export async function createEvent(title: string, youthName: string) {
 }
 
 export async function getEvent(slug: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("events")
     .select("*")
     .eq("slug", slug)
@@ -36,7 +36,7 @@ export async function getEvent(slug: string) {
 }
 
 export async function getEventById(id: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("events")
     .select("*")
     .eq("id", id)
@@ -51,7 +51,7 @@ export async function getEventById(id: string) {
 
 export async function getEventsBySlugs(slugs: string[]) {
   if (slugs.length === 0) return [];
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("events")
     .select("*")
     .in("slug", slugs)
