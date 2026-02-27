@@ -5,6 +5,7 @@ import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "re
 import { motion, AnimatePresence } from "framer-motion";
 import { getGuesses } from "@/lib/guesses";
 import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
+import type { GuessRecord } from "@/lib/types";
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 const US_STATES_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
@@ -21,22 +22,19 @@ interface WorldMapProps {
 }
 
 export function WorldMap({ slug }: WorldMapProps) {
-  const [guesses, setGuesses] = useState<Awaited<ReturnType<typeof getGuesses>>>([]);
+  const [guesses, setGuesses] = useState<GuessRecord[]>([]);
   const [position, setPosition] = useState({ coordinates: DEFAULT_CENTER, zoom: DEFAULT_ZOOM });
 
   useEffect(() => {
-    const load = () => getGuesses(slug).then(setGuesses);
+    const load = () => getGuesses(slug).then(setGuesses).catch(() => setGuesses([]));
     load();
     const interval = setInterval(load, 2000);
     return () => clearInterval(interval);
   }, [slug]);
 
-  const handleMoveEnd = useCallback(
-    (pos: { coordinates: [number, number]; zoom: number }) => {
-      setPosition({ coordinates: pos.coordinates, zoom: pos.zoom });
-    },
-    []
-  );
+  const handleMoveEnd = useCallback((pos: { coordinates: [number, number]; zoom: number }) => {
+    setPosition({ coordinates: pos.coordinates, zoom: pos.zoom });
+  }, []);
 
   const handleZoomIn = useCallback(() => {
     setPosition((p) => ({
@@ -69,20 +67,9 @@ export function WorldMap({ slug }: WorldMapProps) {
   const newestGuessId = markers.length > 0 ? markers[0].id : null;
 
   return (
-    <div className="w-full h-screen bg-[#0a0e1a] overflow-hidden relative">
-      <ComposableMap
-        projection="geoMercator"
-        projectionConfig={{ scale: 140 }}
-        className="w-full h-full"
-      >
-        <ZoomableGroup
-          center={position.coordinates}
-          zoom={position.zoom}
-          minZoom={MIN_ZOOM}
-          maxZoom={MAX_ZOOM}
-          onMoveEnd={handleMoveEnd}
-        >
-          {/* Base layer: world countries */}
+    <div className="relative h-screen w-full overflow-hidden bg-[#0a0e1a]">
+      <ComposableMap projection="geoMercator" projectionConfig={{ scale: 140 }} className="h-full w-full">
+        <ZoomableGroup center={position.coordinates} zoom={position.zoom} minZoom={MIN_ZOOM} maxZoom={MAX_ZOOM} onMoveEnd={handleMoveEnd}>
           <Geographies geography={GEO_URL}>
             {({ geographies }) =>
               geographies.map((geo) => (
@@ -102,7 +89,6 @@ export function WorldMap({ slug }: WorldMapProps) {
             }
           </Geographies>
 
-          {/* Overlay: US states, Canada provinces, Mexico states (borders only) */}
           <Geographies geography={US_STATES_URL}>
             {({ geographies }) =>
               geographies.map((geo) => (
@@ -164,7 +150,7 @@ export function WorldMap({ slug }: WorldMapProps) {
                       exit={{ scale: 0, opacity: 0 }}
                       transition={{ type: "spring", stiffness: 260, damping: 20 }}
                     />
-                    {isNew && (
+                    {isNew ? (
                       <motion.circle
                         r={10}
                         fill="none"
@@ -174,7 +160,7 @@ export function WorldMap({ slug }: WorldMapProps) {
                         animate={{ scale: 2, opacity: 0 }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       />
-                    )}
+                    ) : null}
                     <text
                       textAnchor="middle"
                       y={-12}
@@ -214,32 +200,30 @@ export function WorldMap({ slug }: WorldMapProps) {
         <button
           type="button"
           onClick={handleZoomIn}
-          className="p-3 bg-black/50 backdrop-blur-md rounded-lg text-white border border-white/10 hover:bg-white/10 transition-colors"
+          className="rounded-lg border border-white/10 bg-black/50 p-3 text-white backdrop-blur-md transition-colors hover:bg-white/10"
           aria-label="Zoom in"
         >
-          <ZoomIn className="w-5 h-5" />
+          <ZoomIn className="h-5 w-5" />
         </button>
         <button
           type="button"
           onClick={handleZoomOut}
-          className="p-3 bg-black/50 backdrop-blur-md rounded-lg text-white border border-white/10 hover:bg-white/10 transition-colors"
+          className="rounded-lg border border-white/10 bg-black/50 p-3 text-white backdrop-blur-md transition-colors hover:bg-white/10"
           aria-label="Zoom out"
         >
-          <ZoomOut className="w-5 h-5" />
+          <ZoomOut className="h-5 w-5" />
         </button>
         <button
           type="button"
           onClick={handleReset}
-          className="p-3 bg-black/50 backdrop-blur-md rounded-lg text-white border border-white/10 hover:bg-white/10 transition-colors"
+          className="rounded-lg border border-white/10 bg-black/50 p-3 text-white backdrop-blur-md transition-colors hover:bg-white/10"
           aria-label="Reset view"
         >
-          <Maximize2 className="w-5 h-5" />
+          <Maximize2 className="h-5 w-5" />
         </button>
       </div>
 
-      <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/40">
-        Scroll to zoom • Drag to pan
-      </p>
+      <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/40">Scroll to zoom • Drag to pan</p>
     </div>
   );
 }

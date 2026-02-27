@@ -2,35 +2,38 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { getEvent } from "@/lib/events";
+import { getPublicEvent } from "@/lib/events";
 import { submitGuess } from "@/lib/guesses";
 import { MissionCombobox } from "@/components/MissionCombobox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Link from "next/link";
-import { Loader2, CheckCircle2, MapPin, ExternalLink } from "lucide-react";
+import { Loader2, CheckCircle2, MapPin, ExternalLink, Lock } from "lucide-react";
 import { ALL_MISSIONS } from "@/data/missions";
+import type { PublicEvent } from "@/lib/types";
 
 export default function JoinEventPage() {
   const params = useParams();
   const slug = params.slug as string;
 
-  const [event, setEvent] = useState<Awaited<ReturnType<typeof getEvent>> | null | undefined>(undefined);
+  const [event, setEvent] = useState<PublicEvent | null | undefined>(undefined);
   const [guestName, setGuestName] = useState("");
   const [missionID, setMissionID] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [liveMapUrl, setLiveMapUrl] = useState("");
+  const [signInUrl, setSignInUrl] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       setLiveMapUrl(`${window.location.origin}/live/${slug}`);
+      setSignInUrl(`/sign-in?redirect_url=${encodeURIComponent(`/live/${slug}`)}`);
     }
   }, [slug]);
 
   useEffect(() => {
-    getEvent(slug).then(setEvent);
+    getPublicEvent(slug).then(setEvent).catch(() => setEvent(null));
   }, [slug]);
 
   useEffect(() => {
@@ -90,30 +93,35 @@ export default function JoinEventPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
         <div className="max-w-md w-full text-center space-y-6 animate-in zoom-in-50 duration-500">
-          <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 ring-4 ring-green-50">
-            <CheckCircle2 className="w-10 h-10 text-green-600" />
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100 ring-4 ring-green-50">
+            <CheckCircle2 className="h-10 w-10 text-green-600" />
           </div>
           <h1 className="text-3xl font-bold text-slate-900">You&apos;re on the map!</h1>
-          <p className="text-slate-600 text-lg">Look at the screen to see your pin drop.</p>
-          {liveMapUrl && (
-            <Link
-              href={liveMapUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-            >
-              <MapPin className="w-5 h-5" />
-              View the live map
-              <ExternalLink className="w-4 h-4" />
-            </Link>
-          )}
+          <p className="text-lg text-slate-600">Look at the screen to see your pin drop.</p>
+          {liveMapUrl ? (
+            <div className="flex flex-col gap-3">
+              <Link
+                href={liveMapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
+              >
+                <MapPin className="h-5 w-5" />
+                View the live map
+                <ExternalLink className="h-4 w-4" />
+              </Link>
+              <Link
+                href={signInUrl}
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-3 font-semibold text-slate-900 transition-colors hover:bg-slate-100"
+              >
+                <Lock className="h-4 w-4" />
+                Sign in to watch the livestream
+              </Link>
+            </div>
+          ) : null}
           <div className="pt-8">
-            <p className="text-sm text-slate-500 mb-4">Waiting for the reveal...</p>
-            <button
-              type="button"
-              onClick={handleSubmitAnother}
-              className="text-sm text-blue-600 hover:text-blue-700 underline"
-            >
+            <p className="mb-4 text-sm text-slate-500">Waiting for the reveal...</p>
+            <button type="button" onClick={handleSubmitAnother} className="text-sm text-blue-600 underline hover:text-blue-700">
               Submit a different guess
             </button>
           </div>
@@ -154,17 +162,12 @@ export default function JoinEventPage() {
               <div className="relative">
                 <MissionCombobox value={missionID} onChange={setMissionID} />
               </div>
-              <p className="text-xs text-slate-500 flex items-center mt-1">
-                <MapPin className="w-3 h-3 mr-1" /> Search 450+ missions (e.g. &quot;Tokyo&quot;)
+              <p className="mt-1 flex items-center text-xs text-slate-500">
+                <MapPin className="mr-1 h-3 w-3" /> Search 450+ missions (e.g. &quot;Tokyo&quot;)
               </p>
             </div>
 
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full text-lg h-14"
-              disabled={isSubmitting || !missionID || !guestName}
-            >
+            <Button type="submit" size="lg" className="h-14 w-full text-lg" disabled={isSubmitting || !missionID || !guestName}>
               {isSubmitting ? <Loader2 className="animate-spin" /> : "Submit Guess"}
             </Button>
           </form>

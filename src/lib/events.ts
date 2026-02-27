@@ -1,62 +1,28 @@
-import { getSupabase } from "./supabase";
-
-function generateSlug() {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let result = "";
-  for (let i = 0; i < 6; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
+import { readJson } from "@/lib/http";
+import type { DashboardEventPayload, EventRecord, PublicEvent, StreamState } from "@/lib/types";
 
 export async function createEvent(title: string, youthName: string) {
-  const slug = generateSlug();
-  const { data, error } = await getSupabase()
-    .from("events")
-    .insert({ title, youth_name: youthName, slug })
-    .select("id, slug")
-    .single();
-
-  if (error) throw error;
-  return { eventId: data.id, slug: data.slug };
+  return readJson<{ id: string; slug: string }>(
+    await fetch("/api/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, youthName }),
+    })
+  );
 }
 
-export async function getEvent(slug: string) {
-  const { data, error } = await getSupabase()
-    .from("events")
-    .select("*")
-    .eq("slug", slug)
-    .single();
-
-  if (error) {
-    if (error.code === "PGRST116") return null;
-    throw error;
-  }
-  return data;
+export async function getOwnedEvents() {
+  return readJson<EventRecord[]>(await fetch("/api/events/owned", { cache: "no-store" }));
 }
 
-export async function getEventById(id: string) {
-  const { data, error } = await getSupabase()
-    .from("events")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error) {
-    if (error.code === "PGRST116") return null;
-    throw error;
-  }
-  return data;
+export async function getPublicEvent(slug: string) {
+  return readJson<PublicEvent>(await fetch(`/api/events/${slug}/public`, { cache: "no-store" }));
 }
 
-export async function getEventsBySlugs(slugs: string[]) {
-  if (slugs.length === 0) return [];
-  const { data, error } = await getSupabase()
-    .from("events")
-    .select("*")
-    .in("slug", slugs)
-    .order("created_at", { ascending: false });
+export async function getDashboardEvent(slug: string) {
+  return readJson<DashboardEventPayload>(await fetch(`/api/events/${slug}/dashboard`, { cache: "no-store" }));
+}
 
-  if (error) throw error;
-  return data ?? [];
+export async function getStreamState(slug: string) {
+  return readJson<StreamState>(await fetch(`/api/events/${slug}/stream-state`, { cache: "no-store" }));
 }

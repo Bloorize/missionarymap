@@ -1,4 +1,5 @@
-import { getSupabase } from "./supabase";
+import { readJson } from "@/lib/http";
+import type { GuessRecord } from "@/lib/types";
 
 export async function submitGuess(
   slug: string,
@@ -8,42 +9,15 @@ export async function submitGuess(
   lat: number,
   lng: number
 ) {
-  const { data: event } = await getSupabase()
-    .from("events")
-    .select("id")
-    .eq("slug", slug)
-    .single();
-
-  if (!event) throw new Error("Event not found");
-
-  const { error } = await getSupabase().from("guesses").insert({
-    event_id: event.id,
-    guest_name: guestName,
-    mission_id: missionId,
-    mission_name: missionName,
-    lat,
-    lng,
-  });
-
-  if (error) throw error;
-  return { success: true };
+  return readJson<{ success: true }>(
+    await fetch(`/api/events/${slug}/guesses`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ guestName, missionId, missionName, lat, lng }),
+    })
+  );
 }
 
 export async function getGuesses(slug: string) {
-  const { data: event } = await getSupabase()
-    .from("events")
-    .select("id")
-    .eq("slug", slug)
-    .single();
-
-  if (!event) return [];
-
-  const { data, error } = await getSupabase()
-    .from("guesses")
-    .select("*")
-    .eq("event_id", event.id)
-    .order("created_at", { ascending: false });
-
-  if (error) throw error;
-  return data ?? [];
+  return readJson<GuessRecord[]>(await fetch(`/api/events/${slug}/guesses`, { cache: "no-store" }));
 }
